@@ -71,13 +71,20 @@ def normalize_template_projection(
 
     # Fast calculation of mean/var using Torch + appropriate scaling.
     relative_size = h * w / (h_im * w_im)
-    mean = einops.reduce(projections, '... h w -> ...', reduction='mean')
-    mean *= relative_size**2
+    per_image_mean = einops.reduce(projections, '... h w -> ...', reduction='mean')
+    per_image_mean *= relative_size**2
 
     # First term of the variance calculation
-    variance = einops.reduce((projections - mean) ** 2, '... h w -> ...', reduction='sum')
-    # Add the second term of the variance calculation
-    variance += (h_im - h) * (w_im - w) * mean**2
-    variance /= h_im * w_im
+    diff = (projections - einops.rearrange(per_image_mean, '... -> ... 1 1'))
+    per_image_variance = einops.reduce(
+        diff ** 2,
+        pattern='... h w -> ...',
+        reduction='sum'
+    )
 
-    return projections / torch.sqrt(variance)
+    # Add the second term of the variance calculation
+    per_image_variance += (h_im - h) * (w_im - w) * per_image_mean**2
+    per_image_variance /= h_im * w_im
+    per_image_variance = einops.rearrange(per_image_variance, '... -> ... 1 1')
+
+    return projections / torch.sqrt(per_image_variance)

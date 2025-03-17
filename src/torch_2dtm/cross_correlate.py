@@ -5,16 +5,15 @@ import einops
 from einops._torch_specific import allow_ops_in_compiled_graph
 from torch_fourier_slice import extract_central_slices_rfft_3d
 
+from torch_2dtm.utils import normalize_template_projection
 
-from utils import (
-    normalize_template_projection,
-)
-
+# compile normalization utility function
 allow_ops_in_compiled_graph()
 COMPILE_BACKEND = "inductor"
 normalize_template_projection_compiled = torch.compile(
     normalize_template_projection, backend=COMPILE_BACKEND
 )
+
 
 def match_template_dft_2d(
     image_dft: torch.Tensor,

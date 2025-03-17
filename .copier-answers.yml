@@ -3,7 +3,7 @@ _commit: v1
 _src_path: gh:pydev-guide/pyrepo-copier
 author_email: jdickerson@berkeley.edu
 author_name: Josh Dickerson
-github_username: jdickerson95
+github_username: teamtomo
 mode: simple
 module_name: torch_2dtm
 project_name: torch-2dtm
