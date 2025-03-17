@@ -3,8 +3,6 @@ import torch_2dtm
 
 from scipy.stats import special_ortho_group
 
-torch._inductor.config.cpp.skip_inductor = True  # Disable inductor compilation in CI
-
 
 def test_template_match_dft_2d():
     # Create random test data
